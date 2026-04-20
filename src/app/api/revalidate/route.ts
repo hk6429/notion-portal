@@ -3,10 +3,14 @@ import { revalidatePath } from "next/cache";
 
 export const dynamic = "force-dynamic";
 
+const g = globalThis as any;
+if (!g.__lastNotionToken) g.__lastNotionToken = null;
+
 export async function POST(req: Request) {
   const body = await req.json().catch(() => ({} as any));
 
   if (body?.verification_token) {
+    g.__lastNotionToken = body.verification_token;
     console.log("[NOTION_WEBHOOK_VERIFICATION_TOKEN]", body.verification_token);
     return NextResponse.json({ verification_token: body.verification_token });
   }
@@ -29,10 +33,14 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: Request) {
-  const querySecret = new URL(req.url).searchParams.get("secret");
+  const url = new URL(req.url);
+  const querySecret = url.searchParams.get("secret");
   const secret = process.env.REVALIDATE_SECRET;
   if (!secret || querySecret !== secret) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+  if (url.searchParams.get("mode") === "token") {
+    return NextResponse.json({ lastToken: g.__lastNotionToken });
   }
   revalidatePath("/", "layout");
   return NextResponse.json({ revalidated: true, at: new Date().toISOString() });
