@@ -7,6 +7,7 @@ export async function POST(req: Request) {
   const body = await req.json().catch(() => ({} as any));
 
   if (body?.verification_token) {
+    console.log("[NOTION_WEBHOOK_VERIFICATION_TOKEN]", body.verification_token);
     return NextResponse.json({ verification_token: body.verification_token });
   }
 
