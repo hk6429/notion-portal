@@ -39,16 +39,25 @@ export async function computeGroups(item: SidebarItem): Promise<Group[]> {
   if (cfg.type === "select" || cfg.type === "select-map") {
     for (const entry of entries) {
       const prop = entry.properties?.[cfg.property];
-      const rawName = prop?.select?.name || "";
-      let groupName: string;
-      if (cfg.type === "select-map") {
-        groupName = cfg.map[rawName] || cfg.fallback;
-      } else {
-        groupName = rawName || "未分類";
+      const rawNames: string[] = prop?.multi_select?.length
+        ? prop.multi_select.map((s: any) => s.name)
+        : prop?.select?.name
+          ? [prop.select.name]
+          : [""];
+      for (const rawName of rawNames) {
+        let groupName: string;
+        if (cfg.type === "select-map") {
+          groupName = cfg.map[rawName] || cfg.fallback;
+        } else {
+          groupName = rawName || "未分類";
+        }
+        const list = groups.get(groupName) || [];
+        const id = normalizeId(entry.id);
+        if (!list.find((x) => x.id === id)) {
+          list.push({ id, title: extractEntryTitle(entry) });
+        }
+        groups.set(groupName, list);
       }
-      const list = groups.get(groupName) || [];
-      list.push({ id: normalizeId(entry.id), title: extractEntryTitle(entry) });
-      groups.set(groupName, list);
     }
   } else if (cfg.type === "relation") {
     const relationIds = new Set<string>();

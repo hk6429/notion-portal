@@ -47,11 +47,7 @@ export const SIDEBAR_CONFIG: SidebarItem[] = [
     label: "教學老師",
     icon: "👩‍🏫",
     dataSourceId: "2be2d00e283a81fb8967000beb90a8e2",
-    groupBy: {
-      type: "relation-via-teacher",
-      teacherRelation: "114教案資料庫",
-      groupProperty: "任教科目",
-    },
+    groupBy: { type: "select", property: "任教科目" },
   },
   {
     kind: "external",
