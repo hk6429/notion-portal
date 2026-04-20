@@ -52,7 +52,7 @@ export const SIDEBAR_CONFIG: SidebarItem[] = [
   {
     kind: "external",
     key: "submit-lesson",
-    label: "教案投稿",
+    label: "AI題目投稿",
     icon: "✍️",
     url: "https://chennaicheng.notion.site/2be2d00e283a81fe8ad5f91fd653db71?pvs=105",
   },
