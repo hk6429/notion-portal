@@ -168,34 +168,6 @@ export function extractEntrySnippet(entry: any, limit = 120): string {
   return snippet.length > limit ? snippet.slice(0, limit) + "…" : snippet;
 }
 
-export async function listAllDatabases(): Promise<
-  { id: string; title: string; icon?: string; lastEdited: string }[]
-> {
-  const results: any[] = [];
-  let cursor: string | undefined = undefined;
-  do {
-    const res: any = await notion.search({
-      filter: { value: "database", property: "object" },
-      page_size: 100,
-      start_cursor: cursor,
-    });
-    results.push(...res.results);
-    cursor = res.has_more ? res.next_cursor : undefined;
-  } while (cursor);
-
-  return results
-    .map((db: any) => ({
-      id: normalizeId(db.id),
-      title:
-        db.title?.[0]?.plain_text ||
-        db.data_sources?.[0]?.name ||
-        "未命名資料庫",
-      icon: db.icon?.emoji || db.icon?.icon?.name,
-      lastEdited: db.last_edited_time || "",
-    }))
-    .sort((a, b) => b.lastEdited.localeCompare(a.lastEdited));
-}
-
 const UNNAMED_PATTERNS = [
   "未命名",
   "untitled",
